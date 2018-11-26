@@ -26,7 +26,15 @@ LOGVERSIONS=4
 
 # Secret Sauce Section
 # No user-servicable parts inside
-source ~/tools/functions.inc
+TOOLSHOME="$HOME/tools/"
+if [ -f $TOOLSHOME/function.inc ]; then
+	source $TOOLSHOME/functions.inc
+else
+	echo
+	echo "[ FAIL ]: Could not locate/source '$TOOLSHOME/functions.inc'"
+	echo
+	exit 2
+fi
 #
 
 # Standard startup checks - do not remove
@@ -41,7 +49,7 @@ time_capture_start
 
 SCRIPT_SRC=$1
 SCRIPT_SRC_BKUP=$SCRIPT_SRC".bkp"
-TEMPLATE='~/tools/script_template.sh'
+TEMPLATE="$TOOLSHOME/script_template.sh"
 
 check_file $SCRIPT_SRC
 check_file $TEMPLATE

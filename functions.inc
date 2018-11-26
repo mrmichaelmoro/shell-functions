@@ -12,7 +12,7 @@ red()           { ansi 91 "$@"; }
 yellow()	{ ansi 93 "$@"; }
 green()         { ansi 92 "$@"; }
 cyan()		{ ansi 96 "$@"; }
-ansi()          { echo -e "\e[${1}m${*:2}\e[0m"; }
+ansi()          { echo -e "\033[${1}m${*:2}\033[0m"; }
 lowercase()	{ echo "$@" | tr '[:upper:]' '[:lower:]'; }
 uppercase()	{ echo "$@" | tr '[:lower:]' '[:upper:]'; }
 
@@ -62,7 +62,7 @@ error_handler() {
 	ERROR_MSG=$1
 	if [ -n $2 ]; then ACTION=$2; fi
 	echo -ne "\n$(red [ERROR]): $ERROR_MSG\n"
-	if [ "$ACTION" == "abend" ]; then { exit 1; } fi
+	if [ "$ACTION" == "abend" ]; then { echo; exit 1; } fi
 } # end error_handler
 
 #debug_handler() - prints out any message to standard out with DEBUG formating in ansi orange if
@@ -92,10 +92,18 @@ check_file() {
 	FILE=$1
 	CHECK_FILE_OPTIONS=$2
 	check_parameters $FILE
-	if [ ! -f $FILE ]; then
+
+
+	if [ -f $FILE ]; then
+		FILETYPE="file"
+		get_file_line_count $FILE
+		return
+	elif [ -d $FILE ]; then
+		FILETYPE="dir"
+		return
+	else
 		error_handler "File $(bold \'$FILE\') does not exist." $CHECK_FILE_OPTIONS
 	fi
-	get_file_line_count $FILE
 } # end check_file
 
 # bkup_file() - backs up the file passed as parameter with a .bak extension
